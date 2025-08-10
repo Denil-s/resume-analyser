@@ -1,4 +1,14 @@
-.venv\Scripts\activate
+--- For Python Backend
+
+1. --- Install the required python packages
+pip install -r requirements.txt
+
+2..venv\Scripts\activate
 
 uvicorn app.main:app --reload --port 8000
+
+
+--- For the UI
+
+npm run dev
 

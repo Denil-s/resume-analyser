@@ -18,6 +18,28 @@ app.add_middleware(
 
 model_manager: ModelManager = None
 
+
+JSON_STRUCTURE_PROMPT = """
+Return the result strictly in the following JSON structure:
+
+{
+  "name": string,
+  "similarity": number, 
+  "score_pct": number,
+  "matched_skills": [string],
+  "sections": {
+    "education": string,
+    "projects": string,
+    "certifications": string
+  },
+  "experience_years": number,
+  "common_terms": [string],
+  "text_preview": string,
+  "eligible": string
+}
+"""
+
+
 @app.on_event("startup")
 async def startup_event():
     global model_manager
@@ -27,7 +49,10 @@ async def startup_event():
 
 @app.post("/analyze")
 async def analyze_resume(file: UploadFile = File(...), job_description: str = Form(None)):
-    # save file temporarily
+    # Append schema instructions to job description
+    final_job_description = (job_description or "") + "\n\n" + JSON_STRUCTURE_PROMPT
+
+    # Save file temporarily
     tmp_path = save_upload_file_tmp(file)
     try:
         text = extract_text_from_file(tmp_path)
